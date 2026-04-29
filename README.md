@@ -1,62 +1,73 @@
-# security-camera-in-python
-#this is thge source code made by the amazing Deadline Man
-import cv2
-import time
-import datetime
+AI Camera System (Face Detection and Basic Emotion Estimation)
 
-cap = cv2.VideoCapture(0)
+This project is a real-time webcam-based computer vision system that detects faces and estimates basic emotional states using simple image processing techniques. It is an improved and more stable version of the earlier implementation.
 
-face_cascade = cv2.CascadeClassifier(
-    cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
-body_cascade = cv2.CascadeClassifier(
-    cv2.data.haarcascades + "haarcascade_fullbody.xml")
+Use the following file to run the project:
 
-detection = False
-detection_stopped_time = None
-timer_started = False
-SECONDS_TO_RECORD_AFTER_DETECTION = 5
+ai_camera.py
 
-frame_size = (int(cap.get(3)), int(cap.get(4)))
-fourcc = cv2.VideoWriter_fourcc(*"mp4v")
+This is the newer version of the system and should be used instead of any older files.
 
-while True:
-    _, frame = cap.read()
+What the project does
+Detects faces in real time using your webcam
+Detects smiles inside the detected face region
+Labels the face with a basic emotional state:
+Happy (when a smile is detected)
+Neutral (when no smile is detected)
+Displays a simple on-screen interface with:
+Face bounding boxes
+Emotion label
+FPS counter for performance monitoring
+Tools and libraries used
 
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    faces = face_cascade.detectMultiScale(gray, 1.3, 5)
-    bodies = face_cascade.detectMultiScale(gray, 1.3, 5)
+This project is built using:
 
-    if len(faces) + len(bodies) > 0:
-        if detection:
-            timer_started = False
-        else:
-            detection = True
-            current_time = datetime.datetime.now().strftime("%d-%m-%Y-%H-%M-%S")
-            out = cv2.VideoWriter(
-                f"{current_time}.mp4", fourcc, 20, frame_size)
-            print("Started Recording!")
-    elif detection:
-        if timer_started:
-            if time.time() - detection_stopped_time >= SECONDS_TO_RECORD_AFTER_DETECTION:
-                detection = False
-                timer_started = False
-                out.release()
-                print('Stop Recording!')
-        else:
-            timer_started = True
-            detection_stopped_time = time.time()
+OpenCV (computer vision library cv2)
+Used for webcam access, face detection, and drawing overlays on the video feed
+Python standard library
+Used for timing and FPS calculation
 
-    if detection:
-        out.write(frame)
+No machine learning frameworks or external AI models are required.
 
-    for (x, y, width, height) in faces:
-        cv2.rectangle(frame, (x, y), (x + width, y + height), (255, 0, 0), 3)
+Requirements
 
-    cv2.imshow("Camera", frame)
+To run this project, you need:
 
-    if cv2.waitKey(1) == ord('q'):
-        break
+Python 3.11 recommended (tested and stable version)
+OpenCV library
+Installation
 
-out.release()
-cap.release()
-cv2.destroyAllWindows()
+Install OpenCV using pip:
+
+pip install opencv-python
+
+How to run the project
+
+Navigate to the project folder and run:
+
+python ai_camera.py
+
+To stop the program, press:
+
+q
+
+Notes
+This is not a deep learning based emotion recognition system
+Emotion detection is based on smile detection only and is therefore a simplified approximation
+Performance and accuracy depend on lighting and camera quality
+If the webcam does not open, change the video capture line to:
+
+cv2.VideoCapture(0, cv2.CAP_DSHOW)
+
+Why this version
+
+This version is the cleaned and improved update of the earlier project. It fixes previous issues where distance from the camera incorrectly affected emotion detection. The logic is now more stable and consistent, and the overall structure is cleaner for future upgrades.
+
+Future improvements
+
+This project can be expanded into:
+
+Real AI-based emotion recognition models
+Hand gesture recognition
+Face recognition for identifying specific users
+Smart recording or alert systems based on detected states
